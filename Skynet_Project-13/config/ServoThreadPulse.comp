@@ -1,0 +1,63 @@
+component ServoThreadPulse " ";
+
+description 
+"""
+// sudo halcompile --compile ServoThreadPulse.comp
+// sudo halcompile --install ServoThreadPulse.comp
+// loadrt ServoThreadPulse
+// addf ServoThreadPulse.0 servo-thread    
+
+""";
+ 
+author "Skynet";
+
+license "GPL";
+
+pin out bit pulse=0;
+variable float totalnsec=0;
+
+function _;
+
+;;
+
+#include "rtapi_math.h"
+
+FUNCTION(_) {
+
+		totalnsec += period;
+		
+		if(totalnsec=5000000){
+			pulse!=pulse;
+			totalnsec=0;
+		}	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

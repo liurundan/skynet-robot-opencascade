@@ -1,0 +1,140 @@
+
+loadrt threads name1=base-thread fp1=0 period1=15000 name2=servo-thread period2=1000000
+
+loadusr -W /opt/linuxcnc/addons/linuxcnc-ethercat/src/lcec_conf ./config/ethercat-conf.xml
+loadrt lcec
+
+net ec-slaves-responding <= lcec.slaves-responding
+net ec-link-up <= lcec.link-up
+net ec-all-op <= lcec.all-op
+
+addf lcec.read-all base-thread
+addf lcec.write-all base-thread
+
+loadrt stepgen step_type=0,0,0,0,0,0 ctrl_type=p,p,p,p,p,p
+addf stepgen.make-pulses base-thread
+
+addf stepgen.capture-position servo-thread
+addf stepgen.update-freq servo-thread
+
+#Joint 0 
+setp stepgen.0.position-scale 1000
+setp stepgen.0.steplen 5
+setp stepgen.0.stepspace 5
+setp stepgen.0.dirhold 35000
+setp stepgen.0.dirsetup 35000
+setp stepgen.0.maxaccel 200
+setp stepgen.0.maxvel 350
+setp stepgen.0.enable 1
+
+#Joint 1
+setp stepgen.1.position-scale 1000
+setp stepgen.1.steplen 5
+setp stepgen.1.stepspace 5
+setp stepgen.1.dirhold 35000
+setp stepgen.1.dirsetup 35000
+setp stepgen.1.maxaccel 200
+setp stepgen.1.maxvel 350
+setp stepgen.1.enable 1
+
+#Joint 2
+setp stepgen.2.position-scale 1000
+setp stepgen.2.steplen 5
+setp stepgen.2.stepspace 5
+setp stepgen.2.dirhold 35000
+setp stepgen.2.dirsetup 35000
+setp stepgen.2.maxaccel 200
+setp stepgen.2.maxvel 350
+setp stepgen.2.enable 1
+
+#Joint 3
+setp stepgen.3.position-scale 1000
+setp stepgen.3.steplen 5
+setp stepgen.3.stepspace 5
+setp stepgen.3.dirhold 35000
+setp stepgen.3.dirsetup 35000
+setp stepgen.3.maxaccel 200
+setp stepgen.3.maxvel 350
+setp stepgen.3.enable 1
+
+#Joint 4
+setp stepgen.4.position-scale 1000
+setp stepgen.4.steplen 5
+setp stepgen.4.stepspace 5
+setp stepgen.4.dirhold 35000
+setp stepgen.4.dirsetup 35000
+setp stepgen.4.maxaccel 200
+setp stepgen.4.maxvel 350
+setp stepgen.4.enable 1
+
+#Joint 5
+setp stepgen.5.position-scale 1000
+setp stepgen.5.steplen 5
+setp stepgen.5.stepspace 5
+setp stepgen.5.dirhold 35000
+setp stepgen.5.dirsetup 35000
+setp stepgen.5.maxaccel 200
+setp stepgen.5.maxvel 350
+setp stepgen.5.enable 1
+
+# Connecting robot joints 
+#EL2124 4x 5us pulse
+net J1_step => stepgen.1.step 	lcec.0.output_stepper_1.dout-0
+net J1_dir  => stepgen.1.dir 	lcec.0.output_stepper_1.dout-1
+net J2_step => stepgen.2.step 	lcec.0.output_stepper_1.dout-2
+net J2_dir  => stepgen.2.dir 	lcec.0.output_stepper_1.dout-3
+
+#EL2124 4x 5us pulse
+net J3_step => stepgen.3.step 	lcec.0.output_stepper_2.dout-0
+net J3_dir  => stepgen.3.dir 	lcec.0.output_stepper_2.dout-1
+net J4_step => stepgen.4.step 	lcec.0.output_stepper_2.dout-2
+net J4_dir  => stepgen.4.dir 	lcec.0.output_stepper_2.dout-3
+
+
+#Streamer
+loadrt streamer depth=10000 cfg=ffffffffffff
+addf streamer.0 servo-thread 
+net meat streamermeat streamer.0.curr-depth 	# Look how much lines are left in the buffer.
+
+#Position Command
+net sig_J0_cmd streamer.0.pin.0 stepgen.0.position-cmd
+net sig_J1_cmd streamer.0.pin.1 stepgen.1.position-cmd
+net sig_J2_cmd streamer.0.pin.2 stepgen.2.position-cmd
+net sig_J3_cmd streamer.0.pin.3 stepgen.3.position-cmd
+net sig_J4_cmd streamer.0.pin.4 stepgen.4.position-cmd
+net sig_J5_cmd streamer.0.pin.5 stepgen.5.position-cmd
+
+# Connecting stepgenerator position feedback to opencascade cad viewer.
+net sig_J0_Fb => stepgen.0.position-fb J0_Fb
+net sig_J1_Fb => stepgen.1.position-fb J1_Fb
+net sig_J2_Fb => stepgen.2.position-fb J2_Fb
+net sig_J3_Fb => stepgen.3.position-fb J3_Fb
+net sig_J4_Fb => stepgen.4.position-fb J4_Fb
+net sig_J5_Fb => stepgen.5.position-fb J5_Fb
+
+net sig_CartX_Fb => streamer.0.pin.6 CartX_Fb
+net sig_CartY_Fb => streamer.0.pin.7 CartY_Fb
+net sig_CartZ_Fb => streamer.0.pin.8 CartZ_Fb
+net sig_EulerX_Fb => streamer.0.pin.9 EulerX_Fb
+net sig_EulerY_Fb => streamer.0.pin.10 EulerY_Fb
+net sig_EulerZ_Fb => streamer.0.pin.11 EulerZ_Fb
+
+setp cart_stepsize 100
+setp euler_stepsize 10
+setp euler_maxdegsec 10
+setp joint_stepsize 25
+setp joint_maxdegsec 10
+setp tooldir_stepsize 100
+setp velmax 300
+setp accmax 100
+
+   
+
+
+
+
+
+
+
+
+
