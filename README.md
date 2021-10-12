@@ -40,4 +40,4 @@ sudo apt-get install libeigen3-dev
 
 sudo apt-get install libxmu-dev
 并下载 tk8.6.11.1-src.tar.gz 和 tcl8.6.11-src.tar.gz，进行编译安装；
-下载网站：Download Tcl/Tk Sourceswnload.html；
+下载网站：http://www.tcl-lang.org/software/tcltk/download.html
